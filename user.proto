@@ -1,0 +1,142 @@
+syntax = "proto3";
+
+package StealthIM.User;
+
+option go_package = "StealthIM.User";
+option java_package = "com.StealthIM.Proto.User";
+option java_outer_classname = "User";
+option csharp_namespace = "StealthIM.Proto.User";
+option java_multiple_files = true;
+
+service StealthIMUser {
+  rpc Ping(PingRequest) returns (Pong);
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+  rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoResponse);
+  rpc GetOtherUserInfo(GetOtherUserInfoRequest)
+      returns (GetOtherUserInfoResponse);
+}
+
+import "google/protobuf/descriptor.proto";
+
+enum ProxyType {
+  PROXY_REWRITE_UID = 0;
+}
+
+extend google.protobuf.FieldOptions { optional ProxyType proxy = 50000; }
+
+message PingRequest {}
+message Pong {}
+
+message Result {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message RegisterRequest {
+  string username = 1;
+  string password = 2;
+  string nickname = 3;
+  string email = 4;
+  string phone_number = 5;
+}
+
+message RegisterResponse { Result result = 1; }
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  Result result = 1;
+  string session = 2;
+  UserInfo user_info = 3;
+}
+
+message LogoutRequest { int32 user_id = 1 [ (proxy) = PROXY_REWRITE_UID ]; }
+
+message LogoutResponse { Result result = 1; }
+
+message GetUserInfoRequest { int32 user_id = 1; }
+
+message GetUserInfoResponse {
+  Result result = 1;
+  UserInfo user_info = 2;
+}
+
+message GetOtherUserInfoRequest { string username = 1; }
+
+message GetOtherUserInfoResponse {
+  Result result = 1;
+  PublicUserInfo user_info = 2;
+}
+
+message UserInfo {
+  string username = 2;
+  string nickname = 3;
+  string email = 4;
+  string phone_number = 5;
+  int32 login_level = 6;
+  int32 vip = 7;
+  string create_time = 8;
+}
+
+message PublicUserInfo {
+  int32 user_id = 1;
+  string nickname = 2;
+  int32 vip = 3;
+}
+
+message ChangePasswordRequest {
+  int32 user_id = 1;
+  string new_password = 2;
+}
+message ChangePasswordResponse { Result result = 1; }
+message ChangeNicknameRequest {
+  int32 user_id = 1;
+  string new_nickname = 2;
+}
+message ChangeNicknameResponse { Result result = 1; }
+message ChangeEmailRequest {
+  int32 user_id = 1;
+  string new_email = 2;
+}
+message ChangeEmailResponse { Result result = 1; }
+message ChangePhoneNumberRequest {
+  int32 user_id = 1;
+  string new_phone_number = 2;
+}
+message ChangePhoneNumberResponse { Result result = 1; }
+message ChangeLoginLevelRequest {
+  int32 user_id = 1;
+  int32 new_login_level = 2;
+}
+message ChangeLoginLevelResponse { Result result = 1; }
+
+// 缓存相关消息定义
+message UserInfoCache {
+  int32 user_id = 1;
+  string username = 2;
+  string nickname = 3;
+  int32 login_level = 4;
+  string email = 5;
+  string phone_number = 6;
+  string create_time = 7;
+  int32 vip = 8;
+}
+
+message UserPublicCache {
+  int32 user_id = 1;
+  string nickname = 2;
+  int32 vip = 3;
+}
+
+message UserLoginCache {
+  int32 user_id = 1;
+  string username = 2;
+  string password = 3; // 已加密的密码
+  string salt = 4;
+  int32 login_level = 5;
+}
