@@ -21,6 +21,8 @@ service StealthIMUser {
   rpc ChangeEmail(ChangeEmailRequest) returns (ChangeEmailResponse);
   rpc ChangePhoneNumber(ChangePhoneNumberRequest)
       returns (ChangePhoneNumberResponse);
+  rpc GetUsernameByUID(GetUsernameByUIDRequest)
+      returns (GetUsernameByUIDResponse);
 }
 
 import "google/protobuf/descriptor.proto";
@@ -138,4 +140,10 @@ message UserLoginCache {
   string password = 3; // 已加密的密码
   string salt = 4;
   int32 login_level = 5;
+}
+
+message GetUsernameByUIDRequest { int32 user_id = 1; }
+message GetUsernameByUIDResponse {
+  Result result = 1;
+  string username = 2;
 }
