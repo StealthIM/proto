@@ -23,6 +23,8 @@ service StealthIMUser {
       returns (ChangePhoneNumberResponse);
   rpc GetUsernameByUID(GetUsernameByUIDRequest)
       returns (GetUsernameByUIDResponse);
+  rpc GetUIDByUsername(GetUIDByUsernameRequest)
+      returns (GetUIDByUsernameResponse);
 }
 
 import "google/protobuf/descriptor.proto";
@@ -146,4 +148,10 @@ message GetUsernameByUIDRequest { int32 user_id = 1; }
 message GetUsernameByUIDResponse {
   Result result = 1;
   string username = 2;
+}
+
+message GetUIDByUsernameRequest { string username = 1; }
+message GetUIDByUsernameResponse {
+  Result result = 1;
+  int32 user_id = 2;
 }
