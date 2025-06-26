@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package StealthIM.GroupUser;
+
+option go_package = "StealthIM.GroupUser";
+option java_package = "com.StealthIM.Proto.GroupUser";
+option java_outer_classname = "GroupUser";
+option csharp_namespace = "StealthIM.Proto.GroupUser";
+option java_multiple_files = true;
+
+service StealthIMGroupUser {
+  rpc Ping(PingRequest) returns (Pong);
+  rpc Reload(ReloadRequest) returns (ReloadResponse);
+  rpc GetGroupsByUID(GetGroupsByUIDRequest) returns (GetGroupsByUIDResponse);
+  rpc GetGroupPublicInfo(GetGroupPublicInfoRequest)
+      returns (GetGroupPublicInfoResponse);
+  rpc GetGroupInfo(GetGroupInfoRequest) returns (GetGroupInfoResponse);
+  rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse);
+  rpc JoinGroup(JoinGroupRequest) returns (JoinGroupResponse);
+  rpc InviteGroup(InviteGroupRequest) returns (InviteGroupResponse);
+  rpc SetUserType(SetUserTypeRequest) returns (SetUserTypeResponse);
+  rpc KickUser(KickUserRequest) returns (KickUserResponse);
+  rpc ChangeGroupName(ChangeGroupNameRequest) returns (ChangeGroupNameResponse);
+  rpc ChangeGroupPassword(ChangeGroupPasswordRequest)
+      returns (ChangeGroupPasswordResponse);
+}
+
+message PingRequest {}
+message Pong {}
+
+message Result {
+  int32 code = 1;
+  string msg = 2;
+}
+
+message ReloadRequest {}
+message ReloadResponse { Result result = 1; }
+
+message GetGroupsByUIDRequest { int32 uid = 1; }
+message GetGroupsByUIDResponse {
+  Result result = 1;
+  repeated int32 groups = 2;
+}
+
+message GetGroupsByUIDCache { repeated int32 groups = 1; }
+
+message GetGroupPublicInfoRequest { int32 group_id = 1; }
+message GetGroupPublicInfoResponse {
+  Result result = 1;
+  int32 id = 2;
+  string name = 3;
+  int64 created_at = 4;
+}
+message GetGroupPublicInfoCache {
+  int32 id = 1;
+  string name = 2;
+  int64 created_at = 3;
+}
+
+enum MemberType {
+  member = 0;
+  manager = 1;
+  owner = 2;
+  other = 3;
+}
+message MemberObject {
+  string name = 1;
+  MemberType type = 2;
+}
+
+message GetGroupInfoRequest {
+  int32 group_id = 1;
+  int32 uid = 2;
+}
+message GetGroupInfoResponse {
+  Result result = 1;
+  repeated MemberObject members = 2;
+}
+message GetGroupInfoCache { repeated MemberObject members = 1; }
+
+message CreateGroupRequest {
+  string name = 1;
+  int32 uid = 2;
+}
+message CreateGroupResponse {
+  Result result = 1;
+  int32 group_id = 2;
+}
+
+message JoinGroupRequest {
+  int32 group_id = 1;
+  string password = 2;
+  int32 uid = 3;
+}
+message JoinGroupResponse { Result result = 1; }
+
+message InviteGroupRequest {
+  int32 group_id = 1;
+  int32 uid = 2;
+  string username = 3;
+}
+message InviteGroupResponse { Result result = 1; }
+
+message SetUserTypeRequest {
+  int32 group_id = 1;
+  int32 uid = 2;
+  string username = 3;
+  MemberType type = 4;
+}
+message SetUserTypeResponse { Result result = 1; }
+
+message KickUserRequest {
+  int32 group_id = 1;
+  int32 uid = 2;
+  string username = 3;
+}
+message KickUserResponse { Result result = 1; }
+
+message ChangeGroupNameRequest {
+  int32 group_id = 1;
+  string name = 2;
+  int32 uid = 3;
+}
+message ChangeGroupNameResponse { Result result = 1; }
+
+message ChangeGroupPasswordRequest {
+  int32 group_id = 1;
+  string password = 2;
+  int32 uid = 3;
+}
+message ChangeGroupPasswordResponse { Result result = 1; }
