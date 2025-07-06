@@ -54,6 +54,8 @@ message InterFaceType {
     float float = 5;
     double double = 6;
     bytes blob = 7;
+    uint32 uint32 = 9;
+    uint64 uint64 = 10;
   }
   bool null = 8;
 }
