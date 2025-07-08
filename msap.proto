@@ -98,8 +98,10 @@ message SyncMessageResponse {
 
 // FSAP 接口
 message FileAPICallRequest {
-  int32 uid = 1;   // 用户 id
-  string hash = 2; // 文件hash
+  int32 uid = 1;       // 用户 id
+  int64 groupid = 2;   // 群 id
+  string hash = 3;     // 文件hash
+  string filename = 4; // 文件名
 }
 message FileAPICallResponse {
   Result result = 1; // 请求结果
@@ -122,6 +124,7 @@ message N_MessageContent {
   int64 time = 4;       // 消息时间
   MessageType type = 5; // 消息类型
   string content = 6;   // 消息内容
+  string file_hash = 7; // 文件hash
 }
 
 message N_BroadcastMessage {
