@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package StealthIM.MSAP;
+
+option go_package = "StealthIM.MSAP";
+option java_package = "com.StealthIM.Proto.MSAP";
+option java_outer_classname = "MSAP";
+option csharp_namespace = "StealthIM.Proto.MSAP";
+option java_multiple_files = true;
+
+service StealthIMMSAP {
+  rpc Ping(PingRequest) returns (Pong);
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse);
+  rpc RecallMessage(RecallMessageRequest) returns (RecallMessageResponse);
+  rpc FileAPICall(FileAPICallRequest) returns (FileAPICallResponse);
+}
+
+service StealthIMMSAPSync {
+  rpc Ping(PingRequest) returns (Pong);
+  rpc SyncMessage(SyncMessageRequest) returns (stream SyncMessageResponse);
+}
+
+message PingRequest {}
+message Pong {}
+
+message Result {
+  int32 code = 1;
+  string msg = 2;
+}
+
+enum MessageType { // 消息类型
+  Text = 0;        // 文字
+  Image = 1;       // 纯图片
+  LargeEmoji = 2;  // 大表情
+  Emoji = 3;       // 表情
+  File = 4;        // 文件
+  Card = 5;        // 卡片
+  InnerLink = 6;   // 内部链接
+  // 以下为撤回消息类型
+  Recall_Text = 16;
+  Recall_Image = 17;
+  Recall_LargeEmoji = 18;
+  Recall_Emoji = 19;
+  Recall_File = 20;
+  Recall_Card = 21;
+  Recall_InnerLink = 22;
+}
+
+// 发送消息请求
+message SendMessageRequest {
+  int32 uid = 1;        // 发送者 uid
+  int64 groupid = 2;    // 群 id
+  string msg = 3;       // 消息内容
+  MessageType type = 4; // 消息类型
+}
+// 发送消息响应
+message SendMessageResponse {
+  // result 仅表示向队列投递的结果
+  Result result = 1;
+}
+
+// 撤回消息请求
+message RecallMessageRequest {
+  int32 uid = 1;     // 发送者 uid
+  int64 groupid = 2; // 群 id
+  int64 msgid = 3;   // 撤回的消息id
+}
+// 撤回消息响应
+message RecallMessageResponse {
+  // result 仅表示向队列投递的结果
+  Result result = 1;
+}
+
+// 接收的消息对象
+message ReciveMessageListen {
+  int64 msgid = 1;      // 消息id
+  int32 uid = 2;        // 发送者 uid
+  int64 groupid = 3;    // 群 id
+  string msg = 4;       // 消息内容（文件名）
+  MessageType type = 5; // 消息类型
+  string hash = 6;      // 文件hash
+  string username = 7;  // 发送者用户名（减少二次查表）
+  int64 time = 8;       // 消息时间
+}
+// 同步消息请求
+message SyncMessageRequest {
+  int64 groupid = 1;    // 目标群聊
+  int64 last_msgid = 2; // 本地最后一条消息的id
+}
+// 同步消息响应（流式）
+message SyncMessageResponse {
+  Result result = 1;                    // 请求结果
+  int64 time = 2;                       // 响应时间
+  repeated ReciveMessageListen msg = 3; // 消息内容
+  // 注：这个流式响应会一直持续，直到客户端主动关闭连接。
+  // 链接上时服务器会主动发送历史聊天。之后则为有新消息时服务器主动推送。
+}
+
+// FSAP 接口
+message FileAPICallRequest {
+  int32 uid = 1;   // 用户 id
+  string hash = 2; // 文件hash
+}
+message FileAPICallResponse {
+  Result result = 1; // 请求结果
+}
+
+// --------- NATS 队列消息格式 ----------
+
+enum N_MessageAction {
+  PreWrite = 0;         // 预写入
+  PreRecall = 1;        // 预撤回
+  WriteBroadcast = 16;  // 写入广播
+  RecallBroadcast = 17; // 撤回广播
+  CacheInvalidate = 32; // 缓存失效通知
+}
+
+message N_MessageContent {
+  int32 uid = 1;        // 发送者 uid
+  int64 groupid = 2;    // 群 id
+  int64 msgid = 3;      // 消息id
+  int64 time = 4;       // 消息时间
+  MessageType type = 5; // 消息类型
+  string content = 6;   // 消息内容
+}
+
+message N_BroadcastMessage {
+  string channel = 1;           // 频道名
+  string writer = 2;            // 写入服务(仅用于区分，不具备鉴权作用)
+  int64 writetime = 3;          // 写入时间
+  N_MessageAction action = 4;   // 消息动作
+  N_MessageContent content = 5; // 消息内容
+}
+
+// 缓存失效通知消息
+message N_CacheInvalidateMessage {
+  int64 groupid = 1; // 群 id
+  int64 msgid = 2;   // 导致缓存失效的最新消息id
+}
+
+// 缓存消息列表
+message CachedMessageList {
+  repeated ReciveMessageListen messages = 1; // 消息列表
+}
