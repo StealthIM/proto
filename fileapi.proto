@@ -15,14 +15,7 @@ service StealthIMFileAPI {
   rpc Download(DownloadRequest) returns (stream DownloadResponse);
   rpc Usage(UsageRequest) returns (UsageResponse);
   rpc GetFileInfo(GetFileInfoRequest) returns (GetFileInfoResponse);
-  rpc Command(CommandRequest) returns (CommandResponse); // Only for debug
 }
-
-import "google/protobuf/descriptor.proto";
-enum ProxyType {
-  PROXY_REWRITE_UID = 0;
-}
-extend google.protobuf.FieldOptions { optional ProxyType proxy = 50000; }
 
 message PingRequest {}
 message Pong {}
@@ -38,8 +31,9 @@ message Upload_FileBlock {
 }
 message Upload_FileMetaData {
   int32 totalsize = 1;
-  int32 upload_uid = 2 [ (proxy) = PROXY_REWRITE_UID ];
+  int32 upload_uid = 2;
   string hash = 3;
+  int64 upload_groupid = 4;
 }
 message UploadRequest {
   oneof data {
