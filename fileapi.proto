@@ -30,7 +30,7 @@ message Upload_FileBlock {
   bytes file = 2;
 }
 message Upload_FileMetaData {
-  int32 totalsize = 1;
+  int64 totalsize = 1;
   int32 upload_uid = 2;
   string hash = 3;
   int64 upload_groupid = 4;
@@ -63,8 +63,8 @@ message Download_FileBlock {
 }
 message DownloadRequest {
   string hash = 1;
-  int32 start = 2;
-  int32 end = 3;
+  int64 start = 2;
+  int64 end = 3;
 }
 message DownloadResponse {
   oneof data {
@@ -94,14 +94,14 @@ message GetBlockSizeResponse { int32 blocksize = 1; }
 message GetFileInfoRequest { string hash = 1; }
 message GetFileInfoResponse {
   Result result = 1;
-  int32 size = 2;
+  int64 size = 2;
 }
 
 message StorageNodes { repeated int32 nodeid = 1; }
 
 message BlockStorage {
   string filename = 3;
-  int32 filesize = 4;
+  int64 filesize = 4;
   oneof type {
     StorageNodes nodes = 1;
     bytes data = 2;
