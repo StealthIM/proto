@@ -125,6 +125,7 @@ message N_MessageContent {
   MessageType type = 5; // 消息类型
   string content = 6;   // 消息内容
   string file_hash = 7; // 文件hash
+  string username = 8;  // 发送者用户名
 }
 
 message N_BroadcastMessage {
