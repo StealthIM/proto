@@ -86,9 +86,9 @@ message ReciveMessageListen {
 message SyncMessageRequest {
   int64 groupid = 1;    // 目标群聊
   int64 last_msgid = 2; // 本地最后一条消息的id
-  bool prev = 3;        // 是否向上获取
-  bool sync = 4;        // 是否实时同步
-  int32 limit = 5;      // 获取消息条数，最大 256
+  // bool prev = 3;        // 是否向上获取，已删除
+  bool sync = 4;   // 是否实时同步
+  int32 limit = 5; // 获取消息条数，最大 256
 }
 // 同步消息响应（流式）
 message SyncMessageResponse {
